@@ -8,3 +8,5 @@
 *~
 /.lein-failures
 /.lein-git-deps/
+/.emacs.desktop
+/.emacs.desktop.lock

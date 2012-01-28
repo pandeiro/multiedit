@@ -12,4 +12,4 @@
   design templates."
   []
   {:login (snippet "login.html" [:div#login])
-   :greeting (snippet "greeting.html" [:div#greeting])})
+   :workspace (snippet "workspace.html" [:div#workspace])})

@@ -11,17 +11,13 @@
   "Start a browser-connected REPL and launch a browser to talk to it."
   []
   (dev/run-server)
-  (future (Thread/sleep 3000)
-          (browse/browse-url "http://localhost:8080/development"))
   (tools/cljs-repl))
 
 (defn dev-server
   "Start the development server and open the host application in the
   default browser."
   []
-  (dev/run-server)
-  (future (Thread/sleep 3000)
-          (browse/browse-url "http://localhost:8080")))
+  (dev/run-server))
 
 ;; This is a convenience function so that people can start a CLJS REPL
 ;; without having to type in (tools/cljs-repl)

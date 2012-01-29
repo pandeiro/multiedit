@@ -17,7 +17,7 @@
 (def ^{:doc "The global history object for this application."}
   history (history/history nav-handler))
 
-(dispatch/react-to #{:init}
-                   (fn [t _]
-                     (history/set-token history t)))
+(comment (dispatch/react-to #{:init}
+                            (fn [t d]
+                              (history/set-token history t))))
 

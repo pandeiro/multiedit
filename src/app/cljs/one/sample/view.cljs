@@ -1,6 +1,7 @@
 (ns ^{:doc "Render the views for the application."}
   one.sample.view
-  (:use [domina :only [append! destroy-children!]]
+  (:use [domina :only [append! destroy-children! remove-class! add-class!
+                       nodes]]
         [query  :only [$]])
   (:require-macros [one.sample.snippets :as snippets])
   (:require [one.dispatch               :as dispatch]))
@@ -15,12 +16,24 @@
   :state)
 
 (defn load-templates []
-  (let [content ($ "#content")
-        login (:login snippets)]
+  (let [content ($ "#content")]
     (destroy-children! content)
-    (append! content login)))
+    (append! content (:login snippets))
+    (append! content (:workspace snippets))))
 
 (defmethod render :init [_]
   (load-templates))
-  
+
+(defn- deactivate [id-or-node-or-nodes]
+  (remove-class! (if (string? id-or-node-or-nodes)
+                   ($ id-or-node-or-nodes)
+                   (nodes id-or-node-or-nodes))
+                 "active"))
+
+(defn- activate [id-or-node-or-nodes]
+  (add-class! (if (string? id-or-node-or-nodes)
+                ($ id-or-node-or-nodes)
+                (nodes id-or-node-or-nodes))
+              "active"))
+
 (dispatch/react-to #{:state-change} (fn [_ m] (render m)))

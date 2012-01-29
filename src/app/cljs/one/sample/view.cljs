@@ -25,16 +25,21 @@
 (defmethod render :init [_]
   (load-templates))
 
-(defn- deactivate [id-or-node-or-nodes]
+(defn- deactivate! [id-or-node-or-nodes]
   (remove-class! (if (string? id-or-node-or-nodes)
                    ($ id-or-node-or-nodes)
                    (nodes id-or-node-or-nodes))
                  "active"))
 
-(defn- activate [id-or-node-or-nodes]
+(defn- activate! [id-or-node-or-nodes]
   (add-class! (if (string? id-or-node-or-nodes)
                 ($ id-or-node-or-nodes)
                 (nodes id-or-node-or-nodes))
               "active"))
+
+(defmethod render :workspace [m]
+  (do
+    (deactivate! ($ "#content > div"))
+    (activate! ($ "#workspace"))))
 
 (dispatch/react-to #{:state-change} (fn [_ m] (render m)))

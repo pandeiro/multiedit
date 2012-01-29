@@ -1,1 +1,9 @@
 /* Multi-edit styles */
+
+div#content > div {
+    display: none;
+}
+
+div#content > div.active {
+    display: block;
+}

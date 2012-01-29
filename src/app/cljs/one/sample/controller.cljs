@@ -2,7 +2,8 @@
   application state."}
   one.sample.controller
   (:use [one.sample.model :only (state)])
-  (:require [one.dispatch :as dispatch]))
+  (:require [one.dispatch       :as dispatch]
+            [one.sample.history :as history]))
 
 (defmulti action
   "Accepts a map containing information about an action to perform.

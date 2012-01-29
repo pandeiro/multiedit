@@ -17,9 +17,10 @@
 
 (defn load-templates []
   (let [content ($ "#content")]
-    (destroy-children! content)
-    (append! content (:login snippets))
-    (append! content (:workspace snippets))))
+    (-> content
+        destroy-children!
+        (append! (:login snippets))
+        (append! (:workspace snippets)))))
 
 (defmethod render :init [_]
   (load-templates))

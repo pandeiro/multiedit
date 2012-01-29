@@ -22,8 +22,17 @@
   values to the application's state."
   :type)
 
-(defmethod action :init [_]
-  (reset! state {:state :init}))
+(defn authenticate [callback]
+  (callback (if (> 6 (rand 10)) "pablo" nil)))
 
-(dispatch/react-to #{:init}
+(defmethod action :init []
+  (reset! state {:state :init})
+  (authenticate (fn [who]
+                  (dispatch/fire :workspace {:who who}))))
+
+(defmethod action :workspace [{who :who}]
+  (swap! state assoc :state :workspace :who who))
+
+(dispatch/react-to #{:init :workspace}
                    (fn [t d] (action (assoc d :type t))))
+

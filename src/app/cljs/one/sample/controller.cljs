@@ -1,7 +1,7 @@
 (ns ^{:doc "Respond to user actions by updating local and remote
   application state."}
   one.sample.controller
-  (:use [one.sample.model :only (state)])
+  (:use [one.sample.model :only (state docs)])
   (:require [one.dispatch       :as dispatch]
             [one.sample.history :as history]))
 
@@ -32,6 +32,13 @@
 
 (defmethod action :workspace [{who :who}]
   (swap! state assoc :state :workspace :who who))
+
+(defn get-document [id callback]
+  (callback (get @docs (keyword id))))
+
+(dispatch/react-to #{:document-requested}
+                   (fn [t d] (get-document d #(dispatch/fire
+                                               :document-retrieved %))))
 
 (dispatch/react-to #{:init :workspace}
                    (fn [t d] (action (assoc d :type t))))

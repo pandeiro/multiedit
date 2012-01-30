@@ -1,10 +1,13 @@
 (ns ^{:doc "Render the views for the application."}
   one.sample.view
-  (:use [domina :only [append! destroy-children! remove-class! add-class!
-                       nodes]]
-        [query  :only [$]])
+  (:use [domina     :only [append! destroy-children! destroy!
+                           remove-class! add-class! nodes]]
+        [query      :only [$]]
+        [geddy.core :only [field]])
   (:require-macros [one.sample.snippets :as snippets])
-  (:require [one.dispatch               :as dispatch]))
+  (:require [one.dispatch           :as dispatch]
+            [one.sample.view.editor :as editor]
+            [one.sample.model       :as model]))
 
 (def ^{:doc "A map which contains chunks of HTML which may be used
   when rendering views."}
@@ -23,7 +26,7 @@
         (append! (:workspace snippets)))))
 
 (defmethod render :init [_]
-  (load-templates))
+  (comment (load-templates)))
 
 (defn- deactivate! [id-or-node-or-nodes]
   (remove-class! (if (string? id-or-node-or-nodes)
@@ -37,9 +40,21 @@
                 (nodes id-or-node-or-nodes))
               "active"))
 
-(defmethod render :workspace [m]
-  (do
+
+(defmethod render :workspace [{:keys [who id content history]}]
+  (let [main ($ "#content")]
+    (destroy! ($ "#workspace" main))
+    (append! main (:workspace snippets))
     (deactivate! ($ "#content > div"))
-    (activate! ($ "#workspace"))))
+    (activate! ($ "#workspace"))
+    (editor/add-document-listeners ($ "#workspace-editor-field")
+                                   (model/document-session :who who :id id
+                                                           :content content
+                                                           :history history))))
+
+(dispatch/react-to #{:document-retrieved}
+                   (fn [a m]
+                     (.log js/console ":document-retrieved reaction")
+                     (.log js/console (pr-str a) (pr-str m))))
 
 (dispatch/react-to #{:state-change} (fn [_ m] (render m)))

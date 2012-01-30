@@ -8,8 +8,8 @@
 (def CHANGE goog.editor.Field.EventType.DELAYEDCHANGE)
 (def CLICK goog.events.EventType.CLICK)
 
-(defn add-document-listeners [element doc]
-  (let [field (doc :view element)
+(defn add-document-listeners [element doc-session]
+  (let [field     (doc-session :view element)
         new       ($ "button#new")
         undo      ($ "button#undo")
         redo      ($ "button#redo")
@@ -17,23 +17,23 @@
     (event/listen field
                   CHANGE
                   (fn [e] (let [content (. field (getCleanContents))
-                                previous (first (doc :get-history))]
-                            (doc :set! :content content)
+                                previous (first (doc-session :get-history))]
+                            (doc-session :set! :content content)
                             (if (not= content previous)
                               (do
-                                (doc :conj-history! content)
-                                (doc :reset-cursor!))))))
+                                (doc-session :conj-history! content)
+                                (doc-session :reset-cursor!))))))
     (event/listen undo
                   CLICK
-                  (fn [e] (let [content (doc :undo)] (set-html! content))))
+                  (fn [e] (let [content (doc-session :undo)] (set-html! content))))
     (event/listen redo
                   CLICK
-                  (fn [e] (let [content (doc :redo)] (set-html! content))))
+                  (fn [e] (let [content (doc-session :redo)] (set-html! content))))
     (event/listen new
                   CLICK
                   (fn [e]
                     (append! ($ "#content") (detach! ($ "#workspace")))
-                    (dispatch/fire :workspace {:who (doc :get :who)})))))
+                    (dispatch/fire :workspace {:who (doc-session :get :who)})))))
 
 (defn add-documents-list-listeners []
   (let [items (nodes ($ "#sidebar-documents > ol > li"))]

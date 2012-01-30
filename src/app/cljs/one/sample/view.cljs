@@ -48,12 +48,10 @@
     (activate! ($ "#workspace"))
     (editor/add-document-listeners ($ "#workspace-editor-field")
                                    (model/document-session :who who :id id
-                                                           :content content
-                                                           :history history))))
+                                                           :content content))))
 
 (dispatch/react-to #{:document-retrieved}
-                   (fn [a m]
-                     (.log js/console ":document-retrieved reaction")
-                     (.log js/console (pr-str a) (pr-str m))))
+                   (fn [_ {:keys [who id content]}]
+                     (dispatch/fire :workspace {:who who :id id :content content})))
 
 (dispatch/react-to #{:state-change} (fn [_ m] (render m)))

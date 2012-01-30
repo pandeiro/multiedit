@@ -2,8 +2,7 @@
   one.sample.view
   (:use [domina     :only [append! destroy-children! destroy!
                            remove-class! add-class! nodes]]
-        [query      :only [$]]
-        [geddy.core :only [field]])
+        [query      :only [$]])
   (:require-macros [one.sample.snippets :as snippets])
   (:require [one.dispatch           :as dispatch]
             [one.sample.view.editor :as editor]

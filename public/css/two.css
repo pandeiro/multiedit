@@ -7,3 +7,19 @@ div#content > div.view {
 div#content > div.view.active {
     display: block;
 }
+
+div#workspace {
+    margin: 0 auto;
+    width: 960px;
+    position: relative;
+}
+
+div#workspace-sidebar {
+    position: absolute;
+    top: 0; left: 0;
+    width: 320px;
+}
+
+div#workspace-editor {
+    margin-left: 320px;
+}

@@ -32,11 +32,11 @@
         watch   (add-watch state :document-state-key
                          (fn [k r o n]
                            (swap! docs assoc (keyword (:id n)) n)))
+        now     #(. (js/Date.) (getTime))
         init    (swap! state assoc :who who :id (or id (uuid))
-                       :content (or content ""))
+                       :content (or content "") :ts (now))
         history (atom '())
-        cursor  (atom 0)
-        now     #(. (js/Date.) (getTime))]
+        cursor  (atom 0)]
     (fn document [command & args]
       (condp = command
         :set!          (let [[k v] args]

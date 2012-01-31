@@ -26,10 +26,9 @@
         new       ($ "button#new")
         undo      ($ "button#undo")
         redo      ($ "button#redo")
-        set-html! (fn [content] (. field (setHtml false content true)))]
+        set-html! (fn [content] (. field (setHtml false (or content "") true)))]
     (do
-      (list-documents @docs)
-      (if content (set-html! content))
+      (set-html! content)
       (. field (makeEditable))
       (. element (focus)))
     (event/listen field

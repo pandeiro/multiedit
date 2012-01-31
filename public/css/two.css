@@ -20,6 +20,19 @@ div#workspace-sidebar {
     width: 320px;
 }
 
+ol#documents-list {
+    cursor: default;
+}
+
+ol#documents-list li {
+    /* ... */
+}
+
+ol#documents-list li:hover {
+
+}
+
 div#workspace-editor {
     margin-left: 320px;
+    background: rgb(253,254,255);
 }

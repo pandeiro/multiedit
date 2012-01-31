@@ -72,9 +72,9 @@
 
 (defn list-documents [documents]
   (let [element ($ "#sidebar-documents > ol")
-        sorted  (reverse (sort-by :ts documents))]
+        sorted  (reverse (sort-by :ts (vals documents)))]
     (destroy-children! element)
-    (doseq [[id doc] sorted]
+    (doseq [{id :id :as doc} sorted]
       (append! element (single-node (str "<li id=\"" (name id) "\">"
                                            "<div class=\"excerpt\">"
                                              "<span>"

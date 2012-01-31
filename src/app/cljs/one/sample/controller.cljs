@@ -37,8 +37,8 @@
   (callback (get @docs (keyword id))))
 
 (dispatch/react-to #{:document-requested}
-                   (fn [t d] (get-document d #(dispatch/fire
-                                               :document-retrieved %))))
+                   (fn [t d]
+                     (get-document d #(dispatch/fire :document-retrieved %))))
 
 (dispatch/react-to #{:init :workspace}
                    (fn [t d] (action (assoc d :type t))))

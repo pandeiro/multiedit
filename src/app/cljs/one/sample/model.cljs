@@ -32,7 +32,6 @@
   (let [state   (atom {:who     who
                        :id      (or id (uuid))
                        :content content})
-        logit (.log js/console "doc-session" (pr-str @state))
         history (atom '())
         cursor  (atom 0)
         watch   (add-watch state :document-state-key

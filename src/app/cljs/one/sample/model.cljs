@@ -1,9 +1,12 @@
 (ns ^{:doc "Contains client-side state, validators for input fields
- and functions which react to changes made to the input fields."}
- one.sample.model
+  and functions which react to changes made to the input fields."}
+  one.sample.model
  (:require [one.dispatch              :as dispatch]
-           [goog.editor.SeamlessField :as editor]
-           [goog.editor.Field         :as editor]))
+           [goog.editor.SeamlessField :as editor-div]
+           [goog.editor.Field         :as editor-iframe]))
+;; Note: ns aliases for goog.editor.Field and goog.editor.SeamlessField do not
+;; work due to there being no goog/editor/editor.js file that provides goog.editor
+;; in the Google Closure Library.
 
 (def ^{:doc "An atom containing a map which is the application's current state."}
   state (atom {}))
@@ -25,11 +28,12 @@
         random #(. js/Math (floor (rand 16)))]
     (apply str (repeatedly 32 #(get chars (random))))))
 
-(defn document-session [& {:keys [who id content history]}]
+(defn document-session [& {:keys [who id content]}]
   (let [state   (atom {:who     who
                        :id      (or id (uuid))
                        :content content})
-        history (atom (or history '()))
+        logit (.log js/console "doc-session" (pr-str @state))
+        history (atom '())
         cursor  (atom 0)
         watch   (add-watch state :document-state-key
                          (fn [k r o n]
@@ -44,12 +48,6 @@
         :conj-history! (let [[content] args]
                          (swap! history conj content))
         :get-history   @history
-        :view          (let [[element iframe?] args
-                             field (if iframe?
-                                     (goog.editor/Field. element)
-                                     (goog.editor/SeamlessField. element))]
-                         (. field (makeEditable))
-                         field)
         :reset-cursor! (reset! cursor 0)
         :undo          (let [snapshot (nth @history (inc @cursor) nil)]
                          (if (nil? snapshot)

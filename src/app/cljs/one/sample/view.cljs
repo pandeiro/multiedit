@@ -39,19 +39,23 @@
                 (nodes id-or-node-or-nodes))
               "active"))
 
+(defn refresh-workspace! []
+  (destroy! ($ "#workspace"))
+  (append! ($ "#content") (:workspace snippets)))
 
 (defmethod render :workspace [{:keys [who id content history]}]
-  (let [main ($ "#content")]
-    (destroy! ($ "#workspace" main))
-    (append! main (:workspace snippets))
-    (deactivate! ($ "#content > div"))
-    (activate! ($ "#workspace"))
-    (editor/add-document-listeners ($ "#workspace-editor-field")
-                                   (model/document-session :who who :id id
-                                                           :content content))))
+  (refresh-workspace!)
+  (let [workspace ($ "#workspace")
+        views     ($ "#content > div")
+        editor    ($ "#workspace-editor-field")]
+    (deactivate! views)
+    (activate! workspace)
+    (editor/launch editor (model/document-session
+                           :who who :id id :content content))))
 
 (dispatch/react-to #{:document-retrieved}
                    (fn [_ {:keys [who id content]}]
-                     (dispatch/fire :workspace {:who who :id id :content content})))
+                     (render {:state :workspace
+                              :who who :id id :content content})))
 
 (dispatch/react-to #{:state-change} (fn [_ m] (render m)))

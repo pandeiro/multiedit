@@ -1,19 +1,32 @@
 (ns one.sample.view.editor
   (:use [query  :only [$]]
         [domina :only [append! destroy-children! detach! nodes single-node]])
-  (:require [goog.events       :as event]
-            [goog.editor.Field :as ed]
-            [one.dispatch      :as dispatch]))
+  (:require [goog.events               :as event]
+            [goog.editor.Field         :as editor-iframe]
+            [goog.editor.SeamlessField :as editor-div]
+            [one.dispatch              :as dispatch]))
 
 (def CHANGE goog.editor.Field.EventType.DELAYEDCHANGE)
-(def CLICK goog.events.EventType.CLICK)
+(def CLICK  goog.events.EventType.CLICK)
 
-(defn add-document-listeners [element doc-session]
-  (let [field     (doc-session :view element)
+(defn spawn-editor
+  ([element] (spawn-editor element false))
+  ([element iframe?]
+     (if iframe?
+       (goog.editor/Field. element)
+       (goog.editor/SeamlessField. element))))
+
+(defn launch [element doc-session]
+  (let [field     (spawn-editor element)
+        content   (doc-session :get :content)
         new       ($ "button#new")
         undo      ($ "button#undo")
         redo      ($ "button#redo")
         set-html! (fn [content] (. field (setHtml false content true)))]
+    (do
+      (if content (set-html! content))
+      (. field (makeEditable))
+      (. element (focus)))
     (event/listen field
                   CHANGE
                   (fn [e] (let [content (. field (getCleanContents))
@@ -33,7 +46,8 @@
                   CLICK
                   (fn [e]
                     (append! ($ "#content") (detach! ($ "#workspace")))
-                    (dispatch/fire :workspace {:who (doc-session :get :who)})))))
+                    (dispatch/fire :document-retrieved
+                                   {:who (doc-session :get :who)})))))
 
 (defn add-documents-list-listeners []
   (let [items (nodes ($ "#sidebar-documents > ol > li"))]

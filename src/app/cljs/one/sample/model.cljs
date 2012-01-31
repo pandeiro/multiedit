@@ -20,7 +20,6 @@
 
 (add-watch docs :documents-state-key
            (fn [k r o n]
-             (.log js/console "docs watcher")
              (dispatch/fire :documents-changed n)))
 
 (defn uuid []

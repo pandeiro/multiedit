@@ -28,14 +28,14 @@
     (apply str (repeatedly 32 #(get chars (random))))))
 
 (defn document-session [& {:keys [who id content]}]
-  (let [state   (atom {:who     who
-                       :id      (or id (uuid))
-                       :content content})
-        history (atom '())
-        cursor  (atom 0)
+  (let [state   (atom {})
         watch   (add-watch state :document-state-key
                          (fn [k r o n]
                            (swap! docs assoc (keyword (:id n)) n)))
+        init    (swap! state assoc :who who :id (or id (uuid))
+                       :content (or content ""))
+        history (atom '())
+        cursor  (atom 0)
         now     #(. (js/Date.) (getTime))]
     (fn document [command & args]
       (condp = command

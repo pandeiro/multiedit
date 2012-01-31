@@ -1,6 +1,8 @@
 (ns one.sample.view.editor
-  (:use [query  :only [$]]
-        [domina :only [append! destroy-children! detach! nodes single-node]])
+  (:use [query            :only [$]]
+        [domina           :only [append! destroy-children! detach! nodes
+                                 single-node]]
+        [one.sample.model :only [docs]])
   (:require [goog.events               :as event]
             [goog.editor.Field         :as editor-iframe]
             [goog.editor.SeamlessField :as editor-div]
@@ -16,6 +18,8 @@
        (goog.editor/Field. element)
        (goog.editor/SeamlessField. element))))
 
+(declare list-documents)
+
 (defn launch [element doc-session]
   (let [field     (spawn-editor element)
         content   (doc-session :get :content)
@@ -24,6 +28,7 @@
         redo      ($ "button#redo")
         set-html! (fn [content] (. field (setHtml false content true)))]
     (do
+      (list-documents @docs)
       (if content (set-html! content))
       (. field (makeEditable))
       (. element (focus)))
@@ -56,15 +61,29 @@
                     CLICK
                     (fn [e] (dispatch/fire :document-requested (.-id item)))))))
 
+(defn strip-html [s]
+  (-> s
+      (.replace "<br>" " ")
+      (.replace "&nbsp;" " ")
+      (.replace (js/RegExp. "(<([^>]+)>)" "ig") "")))
+
 (defn excerpt [s chars]
-  (.substring s 0 chars))
+  (.substring (strip-html s) 0 chars))
 
 (defn list-documents [documents]
-  (let [element ($ "#sidebar-documents > ol")]
+  (let [element ($ "#sidebar-documents > ol")
+        sorted  (reverse (sort-by :ts documents))]
     (destroy-children! element)
-    (doseq [[id doc] documents]
+    (doseq [[id doc] sorted]
       (append! element (single-node (str "<li id=\"" (name id) "\">"
-                                         (excerpt (:content doc) 20)
+                                           "<div class=\"excerpt\">"
+                                             "<span>"
+                                               (excerpt (:content doc) 20)
+                                             "</span>"
+                                           "</div>"
+                                           "<div class=\"document-id\">"
+                                             "<span>" (name id) "</span>"
+                                           "</div>"
                                          "</li>"))))
     (add-documents-list-listeners)))
 

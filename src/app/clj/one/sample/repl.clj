@@ -7,17 +7,24 @@
             [one.sample.dev-server :as dev]
             [clojure.java.browse :as browse]))
 
+(def *server-instance* (atom nil))
+
+(defn- run-server []
+  (if (nil? @*server-instance*)
+    (reset! *server-instance* (dev/run-server))
+    (println "Server is already instantiated. Try (restart)")))
+
 (defn go
   "Start a browser-connected REPL and launch a browser to talk to it."
   []
-  (dev/run-server)
+  (run-server)
   (tools/cljs-repl))
 
 (defn dev-server
   "Start the development server and open the host application in the
   default browser."
   []
-  (dev/run-server))
+  (run-server))
 
 ;; This is a convenience function so that people can start a CLJS REPL
 ;; without having to type in (tools/cljs-repl)
@@ -26,7 +33,19 @@
   []
   (tools/cljs-repl))
 
+;; These are convenience functions for stopping and restarting
+(defn stop []
+  (if (not (nil? @*server-instance*))
+    (.stop @*server-instance*)))
+
+(defn restart []
+  (if (not (nil? @*server-instance*))
+    (do
+      (stop)
+      (.start @*server-instance*))))
+
 (println)
 (println "Type (go) to launch the development server and setup a browser-connected REPL.")
 (println "Type (dev-server) to launch only the development server.")
 (println)
+(println "Type (stop) or (restart) to stop or restart the server.")

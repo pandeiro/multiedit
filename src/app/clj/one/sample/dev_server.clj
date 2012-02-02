@@ -80,15 +80,32 @@
             (= uri "/production") (active-menu-transform :production response)
             :else response))))
 
+(defn- insert-manifest-attr
+  "Places a manifest attribute in html tag to enable offline access"
+  [response]
+  (assoc response
+    :body (render (html/transform (html-parse (:body response))
+                                  [:html]
+                                  (html/set-attr :manifest "app.appcache")))))
+
+(defn include-appcache [handler]
+  (fn [request]
+    (let [response (handler request)
+          uri (:uri request)]
+      (if (= uri "/production")
+        (insert-manifest-attr response)
+        response))))
+
 (def ^:private app (-> app-routes
                        (reload/watch-cljs config)
                        (wrap-file "public")
                        rewrite-design-uris
-                       wrap-file-info
+                       (wrap-file-info {"appcache" "text/cache-manifest"})
                        apply-templates
                        js-encoding
                        wrap-params
                        set-active-menu
+                       include-appcache
                        wrap-stacktrace
                        (reload/reload-clj (:reload-clj config))))
 

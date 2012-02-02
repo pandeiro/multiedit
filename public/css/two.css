@@ -15,7 +15,16 @@ div#workspace {
 }
 
 div#workspace-toolbar {
-    padding: 24px;
+    padding: 4px 8px;
+    font-size: 14px;
+}
+
+/* Buttons */
+
+/* Chooser */
+
+div#workspace-toolbar button.choose {
+    width: 24px; padding: 10px 4px; margin-right: -2px;
 }
 
 /* Box */
@@ -34,6 +43,7 @@ div#workspace-toolbar button {
     text-align: center;
     text-decoration: none;
     text-shadow: 0 1px 0 #fafafa;
+    width: 120px;
 }
 
 /* Color */
@@ -76,9 +86,15 @@ div#workspace-toolbar button:active {
     margin-top: 8px;
 }
 
+/* Hide Undo/Redo for now */
+div#workspace-toolbar button#undo, div#workspace-toolbar button#redo {
+    display: none;
+}
+
+/* Sidebar */
 div#workspace-sidebar {
     float: left;
-    width: 320px;
+    width: 240px;
 }
 
 ol#documents-list {
@@ -95,7 +111,32 @@ ol#documents-list li:hover {
 
 }
 
+ol#documents-list li:hover div.document-id {
+    opacity: 1;
+}
+
+ol#documents-list li div.excerpt {
+    font-weight: bold;
+}
+
+ol#documents-list li div.document-id {
+    font-family: monospace;
+    font-size: 10px;
+    opacity: 0;
+    -webkit-transition: all 0.25s linear;
+}
+
+/* Editor */
 div#workspace-editor {
-    margin-left: 320px;
+    min-height: 640px;
+    margin-top: -54px;
+    margin-left: 240px;
+    padding: 84px 48px;
     background: rgb(253,254,255);
+    border: 1px solid #afafab;
+    box-shadow: 1px 1px 8px #9c9c9f;
+}
+
+div#workspace-editor div:focus {
+    outline: none;
 }

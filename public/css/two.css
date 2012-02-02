@@ -15,76 +15,38 @@ div#workspace {
 }
 
 div#workspace-toolbar {
-    padding: 4px 8px;
-    font-size: 14px;
+    overflow: hidden;
 }
 
-/* Buttons */
-
-/* Chooser */
-
-div#workspace-toolbar button.choose {
-    width: 24px; padding: 10px 4px; margin-right: -2px;
+div#toolbar-actions {
+    float: left;
+    width: 240px;
 }
 
-/* Box */
-div#workspace-toolbar button {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    box-shadow: inset 0 0 0 1px #63ce66,
-                0 0 0 1px rgba(255, 255, 255, 0.75),
-                0 1px 4px 0 rgba(0, 0, 0, 0.35);
-    color: #555;
-    display: inline-block;
-    margin: 10px 0 10px 0;
-    padding: 10px 20px;
-    position: relative;
-    text-align: center;
-    text-decoration: none;
-    text-shadow: 0 1px 0 #fafafa;
-    width: 120px;
-}
-
-/* Color */
-div#workspace-toolbar button {
-    background: #57c142;
+div#toolbar-actions button {
+    margin: 0 16px 16px 0;
+    padding: 8px 0;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    /* background: -webkit-gradient(linear, 0 0, 0 bottom, */
+    /* 				 from(#57c142), to(#43ad2e)); */
+    border: 1px solid #dedaa8;
+    border-bottom: 3px solid #ceceae;
+    background: none;
     background: -webkit-gradient(linear, 0 0, 0 bottom,
-				 from(#57c142), to(#43ad2e));
-    background: -moz-linear-gradient(#57c142, #43ad2e);
-    background: linear-gradient(#57c142, #43ad2e);
-    border: solid 1px #2e9c3a;
-    border-bottom: solid 3px #116101;
-    color: #fff;
+    				 from(rgba(255,242,110,0.2)),
+				 to(rgba(194,212,56,0.2)));
+    color: #3c4764;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    box-shadow: -1px -1px 1px 1px #dadada,
+                1px 1px 1px #6e6e6e;
     font-family: "Chunkfive", serif;
     font-size: 1.3em;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+    width: 208px;
 }
 
-/* Hover effects */
-div#workspace-toolbar button:hover {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    background: #57c142;
-    background: -webkit-gradient(linear, 0 0, 0 bottom,
-				 from(#43ad2e), to(#57c142));
-    background: -moz-linear-gradient(#43ad2e, #57c142);
-    background: linear-gradient(#43ad2e, #57c142);
-    border: solid 1px #2e9c3a;
-    border-bottom: solid 3px #116101;
-}
-
-/* Active */
-div#workspace-toolbar button:active {
-    background: #43ad2e;
-    border: solid 1px #6e883f;
-    box-shadow: inset 0 0 0 1px #116101,
-                inset 0 0 6px 1px rgba(0, 0, 0, 0.65),
-                0 0 0 1px rgba(255, 255, 255, 0.75),
-                0 1px 4px 0 rgba(0, 0, 0, 0.35);
-    margin-top: 8px;
-}
 
 /* Hide Undo/Redo for now */
 div#workspace-toolbar button#undo, div#workspace-toolbar button#redo {
@@ -102,20 +64,34 @@ ol#documents-list {
     cursor: default;
 }
 
+ol#documents-list > :first-child {
+    background: -webkit-linear-gradient(left,rgba(255,255,255,0.5),
+					rgba(255,255,255,0));
+    opacity: 1;
+}
+
 ol#documents-list li {
     /* ... */
     list-style-type: none;
+    opacity: 0.4;
+    height: 50px;
 }
 
 ol#documents-list li:hover {
-
+    opacity: 1;
+    text-shadow: 1px 1px 1px #fff;
 }
 
 ol#documents-list li:hover div.document-id {
     opacity: 1;
 }
 
+ol#documents-list li > div {
+    margin-left: 6px;
+}
+
 ol#documents-list li div.excerpt {
+    margin-top: 6px;
     font-weight: bold;
 }
 
@@ -129,9 +105,9 @@ ol#documents-list li div.document-id {
 /* Editor */
 div#workspace-editor {
     min-height: 640px;
-    margin-top: -54px;
+    margin-top: -58px;
     margin-left: 240px;
-    padding: 84px 48px;
+    padding: 84px 64px;
     background: rgb(253,254,255);
     border: 1px solid #afafab;
     box-shadow: 1px 1px 8px #9c9c9f;

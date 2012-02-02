@@ -7,7 +7,7 @@
             [one.sample.dev-server :as dev]
             [clojure.java.browse :as browse]))
 
-(def *server-instance* (atom nil))
+(def ^:dynamic *server-instance* (atom nil))
 
 (defn- run-server []
   (if (nil? @*server-instance*)

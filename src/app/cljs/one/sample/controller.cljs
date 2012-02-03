@@ -3,7 +3,8 @@
   one.sample.controller
   (:use [one.sample.model :only (state docs)])
   (:require [one.dispatch       :as dispatch]
-            [one.sample.history :as history]))
+            [one.sample.history :as history]
+            [local              :as local]))
 
 (defmulti action
   "Accepts a map containing information about an action to perform.
@@ -24,6 +25,10 @@
 
 (defn authenticate [callback]
   (callback (if (> 6 (rand 10)) "pablo" nil)))
+
+(defn check-local-storage []
+  (let [local-docs (local/get-item "docs")]
+    (reset! docs local-docs)))
 
 (defmethod action :init []
   (reset! state {:state :init})

@@ -40,7 +40,7 @@
   (swap! state assoc :state :workspace :who who))
 
 (defn get-document [id callback]
-  (callback (get @docs (keyword id))))
+  (callback (get @docs id)))
 
 (dispatch/react-to #{:document-requested}
                    (fn [t d]

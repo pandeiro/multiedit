@@ -31,7 +31,7 @@
   (let [state   (atom {})
         watch   (add-watch state :document-state-key
                          (fn [k r o n]
-                           (swap! docs assoc (keyword (:id n)) n)))
+                           (swap! docs assoc (:id n) n)))
         now     #(. (js/Date.) (getTime))
         init    (swap! state assoc :who who :id (or id (uuid))
                        :content (or content "") :ts (now))

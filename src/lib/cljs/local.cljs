@@ -4,12 +4,13 @@
 (defn local-storage? []
   (not (undefined? (.-localStorage js/window))))
 
-(defn get-item [key]
+(defn get-item [k]
   (if (local-storage?)
-    (. js/localStorage (getItem key))))
+    (. js/localStorage (getItem k))))
 
-(defn get-clojure [id]
-  (reader/read-string (get-item id)))
+(defn get-clojure [k]
+  (if-let [item (get-item k)]
+    (reader/read-string item)))
 
 (defn set-item [k v]
   (if (local-storage?)

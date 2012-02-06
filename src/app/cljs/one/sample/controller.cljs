@@ -27,12 +27,13 @@
 (defn authenticate [callback]
   (callback (if (> 6 (rand 10)) "pablo" nil)))
 
-(defn check-local-storage []
-  (let [local-docs (reader/read-string (local/get-item "docs"))]
+(defn check-for-local-docs []
+  (if-let [local-docs (local/get-clojure "docs")]
     (reset! docs local-docs)))
 
 (defmethod action :init []
   (reset! state {:state :init})
+  (check-for-local-docs)
   (authenticate (fn [who]
                   (dispatch/fire :workspace {:who who}))))
 

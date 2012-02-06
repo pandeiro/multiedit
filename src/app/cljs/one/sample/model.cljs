@@ -1,9 +1,8 @@
 (ns ^{:doc "Contains client-side state, validators for input fields
   and functions which react to changes made to the input fields."}
   one.sample.model
- (:require [one.dispatch              :as dispatch]
-           [goog.editor.SeamlessField :as editor-div]
-           [goog.editor.Field         :as editor-iframe]))
+  (:require [one.dispatch :as dispatch]
+            [local        :as local]))
 ;; Note: ns aliases for goog.editor.Field and goog.editor.SeamlessField do not
 ;; work due to there being no goog/editor/editor.js file that provides goog.editor
 ;; in the Google Closure Library.
@@ -21,6 +20,10 @@
 (add-watch docs :documents-state-key
            (fn [k r o n]
              (dispatch/fire :documents-changed n)))
+
+(dispatch/react-to #{:documents-changed}
+                   (fn [_ d]
+                     (local/set-item "docs" d)))
 
 (defn uuid []
   (let [chars "0123456789abcdef"
@@ -56,3 +59,4 @@
         :redo          (let [snapshot (nth @history (dec @cursor))]
                          (swap! cursor dec)
                          snapshot)))))
+

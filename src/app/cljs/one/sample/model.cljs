@@ -3,9 +3,6 @@
   one.sample.model
   (:require [one.dispatch :as dispatch]
             [local        :as local]))
-;; Note: ns aliases for goog.editor.Field and goog.editor.SeamlessField do not
-;; work due to there being no goog/editor/editor.js file that provides goog.editor
-;; in the Google Closure Library.
 
 (def ^{:doc "An atom containing a map which is the application's current state."}
   state (atom {}))

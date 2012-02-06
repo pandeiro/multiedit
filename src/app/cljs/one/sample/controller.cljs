@@ -2,7 +2,8 @@
   application state."}
   one.sample.controller
   (:use [one.sample.model :only (state docs)])
-  (:require [one.dispatch       :as dispatch]
+  (:require [cljs.reader        :as reader]
+            [one.dispatch       :as dispatch]
             [one.sample.history :as history]
             [local              :as local]))
 
@@ -27,7 +28,7 @@
   (callback (if (> 6 (rand 10)) "pablo" nil)))
 
 (defn check-local-storage []
-  (let [local-docs (local/get-item "docs")]
+  (let [local-docs (reader/read-string (local/get-item "docs"))]
     (reset! docs local-docs)))
 
 (defmethod action :init []

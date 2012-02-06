@@ -6,10 +6,13 @@
 
 (defn get-item [key]
   (if (local-storage?)
-    (reader/read-string (. js/localStorage (getItem (name key))))))
+    (. js/localStorage (getItem key))))
 
-(defn set-item [key item]
+(defn get-clojure [id]
+  (reader/read-string (get-item id)))
+
+(defn set-item [k v]
   (if (local-storage?)
-    (let [item (if (string? item) item (pr-str item))]
-      (. js/localStorage (setItem (name key) item)))))
+    (let [item (if (string? v) v (pr-str v))]
+      (. js/localStorage (setItem k item)))))
 

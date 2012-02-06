@@ -35,7 +35,10 @@
   (reset! state {:state :init})
   (check-for-local-docs)
   (authenticate (fn [who]
-                  (dispatch/fire :workspace {:who who}))))
+                  (if (empty? @docs)
+                    (dispatch/fire :workspace {:who who})
+                    (dispatch/fire :document-retrieved
+                                   (first (reverse (sort-by :ts (vals @docs)))))))))
 
 (defmethod action :workspace [{who :who}]
   (swap! state assoc :state :workspace :who who))

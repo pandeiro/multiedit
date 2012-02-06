@@ -25,7 +25,7 @@
         (append! (:workspace snippets)))))
 
 (defmethod render :init [_]
-  (comment (load-templates)))
+  (comment))
 
 (defn- deactivate! [id-or-node-or-nodes]
   (remove-class! (if (string? id-or-node-or-nodes)
@@ -43,7 +43,7 @@
   (destroy! ($ "#workspace"))
   (append! ($ "#content") (:workspace snippets)))
 
-(defmethod render :workspace [{:keys [who id content history]}]
+(defmethod render :workspace [{:keys [who id content] :as fluff}]
   (refresh-workspace!)
   (let [workspace ($ "#workspace")
         views     ($ "#content > div")

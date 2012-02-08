@@ -5,7 +5,7 @@
   only available in modern browsers"
   ([selector] ($ selector js/document))
   ([selector ctx]
-     (let [result (. js/document (querySelectorAll selector ctx))]
+     (let [result (. ctx (querySelectorAll selector))]
        (if (and result (= 1 (.-length result)))
          (aget result 0)
          result))))

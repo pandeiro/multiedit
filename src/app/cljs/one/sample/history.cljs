@@ -5,9 +5,8 @@
   is a simple event listener on the hashchange event to detect and
   dispatch a new token."}
   one.sample.history
-  (:require [one.dispatch        :as dispatch]
-            [one.browser.history :as history]
-            [goog.events         :as event]))
+  (:require [one.dispatch :as dispatch]
+            [goog.events  :as event]))
 
 (event/listen js/window goog.events.EventType.HASHCHANGE
               (fn [e]
@@ -17,17 +16,4 @@
                         token (.substr (.-hash link) 1)]
                     (dispatch/fire (keyword token))))))
 
-(comment
-  (defn nav-handler
-    "Handle navigation events by firing the appropriate view token."
-    [{:keys [token navigation?]}]
-    (when navigation?
-      (dispatch/fire token)))
-
-  (def ^{:doc "The global history object for this application."}
-    history (history/history nav-handler))
-
-  (dispatch/react-to #{:init}
-                     (fn [t d]
-                       (history/set-token history t))))
 

@@ -1,7 +1,7 @@
 (ns ^{:doc "Respond to user actions by updating local and remote
   application state."}
   one.sample.controller
-  (:use [one.sample.model :only (state docs)])
+  (:use [one.sample.model :only (state docs uuid)])
   (:require [cljs.reader        :as reader]
             [one.dispatch       :as dispatch]
             [one.sample.history :as history]
@@ -32,24 +32,35 @@
     (reset! docs local-docs)))
 
 (defmethod action :init []
-  (reset! state {:state :init})
   (check-for-local-docs)
   (authenticate (fn [who]
-                  (if (empty? @docs)
-                    (dispatch/fire :workspace {:who who})
-                    (dispatch/fire :document-retrieved
-                                   (first (reverse (sort-by :ts (vals @docs)))))))))
+                  (reset! state {:state :init :who who})
+                  (let [token (history/get-token)]
+                    (if (not (empty? token))
+                      (get-document token)
+                      (dispatch/fire :document-requested
+                                     (if (not (empty? @docs))
+                                       (->> (vals @docs)
+                                            (sort-by :ts)
+                                            reverse first :id))))))))
 
 (defmethod action :workspace [{who :who}]
   (swap! state assoc :state :workspace :who who))
 
-(defn get-document [id callback]
-  (callback (get @docs id)))
+(defn get-document
+  ([id] (get-document id #(dispatch/fire :document-retrieved %)))
+  ([id callback]
+      (callback (get @docs id {:id id :who (:who @state)}))))
 
 (dispatch/react-to #{:document-requested}
                    (fn [t d]
-                     (get-document d #(dispatch/fire :document-retrieved %))))
+                     (history/set-token (or d (uuid)))))
 
 (dispatch/react-to #{:init :workspace}
                    (fn [t d] (action (assoc d :type t))))
 
+(defn is-doc-id-token? [s]
+  (.test (js/RegExp. "^[a-z0-9]{32}$") (name s)))
+
+(dispatch/react-to is-doc-id-token?
+                   (fn [t d] (get-document (name t))))

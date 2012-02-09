@@ -8,12 +8,24 @@
   (:require [one.dispatch :as dispatch]
             [goog.events  :as event]))
 
-(event/listen js/window goog.events.EventType.HASHCHANGE
+(defn set-token [token]
+  (let [loc (.split (.-href (.-location js/window)) "#")
+        path (aget loc 0)
+        hash (aget loc 1)]
+    (if (not= hash token)
+      (set! (.-location js/window) (str path \# token)))))
+
+(defn get-token
+  ([] (get-token (.-href (.-location js/window))))
+  ([loc]
+     (let [index (. loc (indexOf "#"))]
+        (if (> 0 index) "" (. loc (substring (inc index)))))))
+
+(event/listen js/window
+              goog.events.EventType.HASHCHANGE
               (fn [e]
-                (if (not= (.-oldURL e) (.-newURL e))
-                  (let [link  (.createElement js/document "a")
-                        url   (set! (.-href link) (.-newURL e))
-                        token (.substr (.-hash link) 1)]
-                    (dispatch/fire (keyword token))))))
-
-
+                (. e (preventDefault))
+                (-> (.-newURL (. e (getBrowserEvent)))
+                    get-token
+                    keyword
+                    dispatch/fire)))

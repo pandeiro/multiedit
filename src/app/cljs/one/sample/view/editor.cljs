@@ -50,12 +50,14 @@
                   CLICK
                   (fn [e]
                     (append! ($ "#content") (detach! ($ "#workspace")))
-                    (dispatch/fire :document-retrieved
-                                   {:who (doc-session :get :who)})))))
+                    (dispatch/fire :document-requested)))))
 
 (defn add-documents-list-listeners []
   (let [items (nodes ($ "#sidebar-documents > ol > li"))]
     (doseq [item items]
+      (event/listen ($ "a.bookmark" item)
+                    CLICK
+                    (fn [e] (. e (preventDefault))))
       (event/listen item
                     CLICK
                     (fn [e] (dispatch/fire :document-requested (.-id item)))))))
@@ -74,16 +76,21 @@
         sorted  (reverse (sort-by :ts (vals documents)))]
     (destroy-children! element)
     (doseq [{id :id :as doc} sorted]
-      (append! element (single-node (str "<li id=\"" (name id) "\">"
-                                           "<div class=\"excerpt\">"
-                                             "<span>"
-                                               (excerpt (:content doc) 20)
-                                             "</span>"
-                                           "</div>"
-                                           "<div class=\"document-id\">"
-                                             "<span>" (name id) "</span>"
-                                           "</div>"
-                                         "</li>"))))
+      (append! element (single-node
+                        (str "<li id=\"" (name id) "\">"
+                               "<div class=\"excerpt\">"
+                                 "<span>"
+                                   (excerpt (:content doc) 20)
+                                 "</span>"
+                               "</div>"
+                               "<div class=\"document-id\">"
+                                 "<span>"
+                                   "<a class=\"bookmark\" href=\"#" (name id) "\">"
+                                     (name id)
+                                   "</a>"
+                                 "</span>"
+                               "</div>"
+                             "</li>"))))
     (add-documents-list-listeners)))
 
 (dispatch/react-to #{:documents-changed}

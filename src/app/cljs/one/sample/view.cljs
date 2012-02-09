@@ -43,7 +43,7 @@
   (destroy! ($ "#workspace"))
   (append! ($ "#content") (:workspace snippets)))
 
-(defmethod render :workspace [{:keys [who id content] :as fluff}]
+(defmethod render :workspace [{:keys [who id content]}]
   (refresh-workspace!)
   (let [workspace ($ "#workspace")
         views     ($ "#content > div")

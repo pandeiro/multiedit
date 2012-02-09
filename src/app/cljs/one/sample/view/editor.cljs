@@ -6,7 +6,8 @@
   (:require [goog.events               :as event]
             [goog.editor.Field         :as editor-iframe]
             [goog.editor.SeamlessField :as editor-div]
-            [one.dispatch              :as dispatch]))
+            [one.dispatch              :as dispatch]
+            [crate.core                :as crate]))
 
 (def CHANGE goog.editor.Field.EventType.DELAYEDCHANGE)
 (def CLICK  goog.events.EventType.CLICK)
@@ -76,21 +77,13 @@
         sorted  (reverse (sort-by :ts (vals documents)))]
     (destroy-children! element)
     (doseq [{id :id :as doc} sorted]
-      (append! element (single-node
-                        (str "<li id=\"" (name id) "\">"
-                               "<div class=\"excerpt\">"
-                                 "<span>"
-                                   (excerpt (:content doc) 20)
-                                 "</span>"
-                               "</div>"
-                               "<div class=\"document-id\">"
-                                 "<span>"
-                                   "<a class=\"bookmark\" href=\"#" (name id) "\">"
-                                     (name id)
-                                   "</a>"
-                                 "</span>"
-                               "</div>"
-                             "</li>"))))
+      (append! element (crate/html
+                        [:li {:id (name id)}
+                         [:div.excerpt
+                          [:span (excerpt (:content doc) 20)]]
+                         [:div.document-id
+                          [:span
+                           [:a.bookmark {:href (str \# (name id))} (name id)]]]])))
     (add-documents-list-listeners)))
 
 (dispatch/react-to #{:documents-changed}

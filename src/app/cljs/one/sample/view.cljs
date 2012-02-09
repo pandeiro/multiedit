@@ -25,7 +25,7 @@
         (append! (:workspace snippets)))))
 
 (defmethod render :init [_]
-  (comment))
+  (. js/window (scrollTo 0 0)))
 
 (defn- deactivate! [id-or-node-or-nodes]
   (remove-class! (if (string? id-or-node-or-nodes)

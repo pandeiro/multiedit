@@ -36,7 +36,6 @@
                   CHANGE
                   (fn [e] (let [content (. field (getCleanContents))
                                 previous (first (doc-session :get-history))]
-                            (.log js/console content)
                             (doc-session :set! :content content)
                             (if (not= content previous)
                               (do
@@ -66,6 +65,7 @@
 
 (defn strip-html [s]
   (-> s
+      (.replace "</div>" "</div> ")
       (.replace "<br>" "\n")
       (.replace "&nbsp;" " ")
       (.replace (js/RegExp. "(<([^>]+)>)" "ig") "")))

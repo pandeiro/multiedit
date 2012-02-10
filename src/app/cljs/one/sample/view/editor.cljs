@@ -36,6 +36,7 @@
                   CHANGE
                   (fn [e] (let [content (. field (getCleanContents))
                                 previous (first (doc-session :get-history))]
+                            (.log js/console content)
                             (doc-session :set! :content content)
                             (if (not= content previous)
                               (do
@@ -65,25 +66,40 @@
 
 (defn strip-html [s]
   (-> s
-      (.replace "<br>" " ")
+      (.replace "<br>" "\n")
       (.replace "&nbsp;" " ")
       (.replace (js/RegExp. "(<([^>]+)>)" "ig") "")))
 
 (defn excerpt [s chars]
-  (.substring (strip-html s) 0 chars))
+  (let [stripped (strip-html s)
+        trimmed  (.trim stripped)
+        length   (.-length trimmed)
+        first-br (.indexOf trimmed "\n")
+        substr   (.substring trimmed 0 chars)
+        last-sp  (.lastIndexOf substr " ")]
+    (if (empty? trimmed)
+      "<Untitled>"
+      (if (and (not= -1 first-br) (< first-br chars))
+        (.substring trimmed 0 first-br)
+        (if (> length chars)
+          (if (not= -1 last-sp)
+            (str (.substring substr 0 last-sp) "...")
+            (str substr "..."))
+          trimmed)))))
 
 (defn list-documents [documents]
   (let [element ($ "#sidebar-documents > ol")
         sorted  (reverse (sort-by :ts (vals documents)))]
     (destroy-children! element)
     (doseq [{id :id :as doc} sorted]
-      (append! element (crate/html
-                        [:li {:id (name id)}
-                         [:div.excerpt
-                          [:span (excerpt (:content doc) 20)]]
-                         [:div.document-id
-                          [:span
-                           [:a.bookmark {:href (str \# (name id))} (name id)]]]])))
+      (append! element
+               (crate/html [:li {:id (name id)}
+                            [:div.excerpt
+                             [:span (excerpt (:content doc) 20)]]
+                            [:div.document-id
+                             [:span
+                              [:a.bookmark {:href (str \# (name id))}
+                               (name id)]]]])))
     (add-documents-list-listeners)))
 
 (dispatch/react-to #{:documents-changed}

@@ -1,1 +1,96 @@
 /* New CSS styles */
+
+/* ClojureScript One topbar */
+body { margin: 0; padding: 0; }
+div.topbar {
+    background: #000; color: #fff; margin: 0; padding: 4px; font-size: 12px;
+    letter-spacing: 1px;
+}
+div.topbar a {
+    color: #fff; text-decoration: none; font-weight: bold;
+}
+div.topbar div.container ul#navigation.nav {
+    display: inline; text-align: right;
+}
+div.topbar div.container ul#navigation.nav li {
+    display: inline; list-style: none;
+}
+div.topbar div.container ul#navigation.nav li.active a {
+    color: #4f9dec;
+}
+
+/* workspace toolbar */
+
+
+div#workspace-toolbar {
+    position: relative;
+    padding: 12px 24px;
+    border-bottom: 1px solid #cecece;
+}
+
+div#workspace-toolbar button {
+    border: none;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 8px;
+    width: 72px;
+}
+
+div#workspace-toolbar button#new,
+div#workspace-toolbar button#upload {
+    background: #4f9dec;
+}
+
+div#workspace-toolbar button#new {
+    font-weight: bold;
+    width: 96px;
+}
+
+div#workspace-toolbar button#upload {
+    width: 48px;
+}
+
+div#workspace-toolbar div#actions {
+    position: absolute; top: 12px; right: 24px;
+}
+
+div#star-title {
+    position: absolute; top: 18px; left: 286px; font-size: 18px;
+}
+
+/* workspace-sidebar */
+
+div#workspace-sidebar {
+    padding: 48px 24px;
+    float: left;
+    width: 240px;
+    color: #8a8a8a;
+}
+
+div#workspace-sidebar h4 {
+    margin: 0; padding: 0;
+}
+
+div#sidebar-documents ol#documents-list {
+    margin: 0; padding: 0;
+}
+
+div#sidebar-documents ol#documents-list li {
+    list-style: none;
+    padding: 6px 0;
+}
+
+div#sidebar-documents ol#documents-list li div.document-id {
+    font-size: 12px;
+}
+
+/* workspace-editor */
+
+div#workspace-editor {
+    padding: 48px 24px;
+    margin-left: 264px;
+}
+
+div#workspace-editor-field:focus {
+    outline: none;
+}

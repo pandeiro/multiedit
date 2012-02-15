@@ -25,8 +25,6 @@
   (let [field     (spawn-editor element)
         content   (doc-session :get :content)
         new       ($ "button#new")
-        undo      ($ "button#undo")
-        redo      ($ "button#redo")
         set-html! (fn [content] (. field (setHtml false (or content "") true)))]
     (do
       (set-html! content)
@@ -41,12 +39,6 @@
                               (do
                                 (doc-session :conj-history! content)
                                 (doc-session :reset-cursor!))))))
-    (event/listen undo
-                  CLICK
-                  (fn [e] (let [content (doc-session :undo)] (set-html! content))))
-    (event/listen redo
-                  CLICK
-                  (fn [e] (let [content (doc-session :redo)] (set-html! content))))
     (event/listen new
                   CLICK
                   (fn [e]

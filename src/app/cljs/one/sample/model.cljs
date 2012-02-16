@@ -35,8 +35,7 @@
         now     #(.getTime (js/Date.))
         init    (swap! state assoc :who who :id (or id (uuid))
                        :content (or content "") :ts (now)
-                       :titled (if title true false)
-                       :title (or title "<Untitled>"))]
+                       :title (or title nil))]
     (fn document [command & args]
       (condp = command
         :set! (let [[k v] args]

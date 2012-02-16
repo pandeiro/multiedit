@@ -75,13 +75,34 @@ div#sidebar-documents ol#documents-list {
     margin: 0; padding: 0;
 }
 
+div#sidebar-documents ol#documents-list:hover li {
+    color: #aeaeae;
+}
+
 div#sidebar-documents ol#documents-list li {
     list-style: none;
     padding: 6px 0;
+    cursor: pointer;
+    -webkit-transition: all 0.25s linear;
 }
 
 div#sidebar-documents ol#documents-list li div.document-id {
     font-size: 12px;
+    opacity: 0;
+    -webkit-transition: all 1s ease-in;
+}
+
+div#sidebar-documents ol#documents-list li:hover {
+    color: #1d1d1d;
+}
+
+div#sidebar-documents ol#documents-list li:hover div.document-id {
+    opacity: 1;
+}
+
+div.document-id a.bookmark {
+    text-decoration: none;
+    color: #5f5f99;
 }
 
 /* workspace-editor */

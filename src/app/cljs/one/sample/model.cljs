@@ -24,36 +24,23 @@
 
 (defn uuid []
   (let [chars "0123456789abcdef"
-        random #(. js/Math (floor (rand 16)))]
+        random #(.floor js/Math (rand 16))]
     (apply str (repeatedly 32 #(get chars (random))))))
 
-(defn document-session [& {:keys [who id content]}]
+(defn document-session [& {:keys [who id content title]}]
   (let [state   (atom {})
         watch   (add-watch state :document-state-key
                          (fn [k r o n]
                            (swap! docs assoc (:id n) n)))
-        now     #(. (js/Date.) (getTime))
+        now     #(.getTime (js/Date.))
         init    (swap! state assoc :who who :id (or id (uuid))
-                       :content (or content "") :ts (now))
-        history (atom '())
-        cursor  (atom 0)]
+                       :content (or content "") :ts (now)
+                       :titled (if title true false)
+                       :title (or title "<Untitled>"))]
     (fn document [command & args]
       (condp = command
-        :set!          (let [[k v] args]
-                         (swap! state assoc k v :ts (now)))
-        :get           (let [[key] args]
-                         (@state key))
-        :conj-history! (let [[content] args]
-                         (swap! history conj content))
-        :get-history   @history
-        :reset-cursor! (reset! cursor 0)
-        :undo          (let [snapshot (nth @history (inc @cursor) nil)]
-                         (if (nil? snapshot)
-                           (reset! cursor 0)
-                           (do
-                             (swap! cursor inc)
-                             snapshot)))
-        :redo          (let [snapshot (nth @history (dec @cursor))]
-                         (swap! cursor dec)
-                         snapshot)))))
+        :set! (let [[k v] args]
+                (swap! state assoc k v :ts (now)))
+        :get  (let [[key] args]
+                (@state key))))))
 

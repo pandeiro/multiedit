@@ -24,8 +24,7 @@
 (event/listen js/window
               goog.events.EventType.HASHCHANGE
               (fn [e]
-                (. e (preventDefault))
-                (-> (.-newURL (. e (getBrowserEvent)))
+                (-> (.-newURL (.getBrowserEvent e))
                     get-token
                     keyword
                     dispatch/fire)))

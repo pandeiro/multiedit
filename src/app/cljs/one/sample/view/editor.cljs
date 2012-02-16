@@ -64,12 +64,11 @@
     (event/listen new
                   CLICK
                   (fn [e]
-                    (append! ($ "#content") (detach! ($ "#workspace")))
+                    (appe#nd! ($ "#content") (detach! ($ "#workspace")))
                     (dispatch/fire :document-requested)))
     (event/listen title
                   CLICK
-                  (fn [e]
-                    (.setAttribute title "contenteditable" true)))))
+                  (fn [e] (.setAttribute title "contenteditable" true)))))
 
 (defn- add-documents-list-listeners []
   (let [items (nodes ($ "#sidebar-documents > ol > li"))]

@@ -59,8 +59,8 @@
 (dispatch/react-to #{:init :workspace}
                    (fn [t d] (action (assoc d :type t))))
 
-(defn is-doc-id-token? [s]
+(defn token-changed-to-id?
   (.test (js/RegExp. "^[a-z0-9]{32}$") (name s)))
 
-(dispatch/react-to is-doc-id-token?
+(dispatch/react-to token-changed-to-id?
                    (fn [t d] (get-document (name t))))

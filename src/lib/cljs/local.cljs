@@ -12,8 +12,13 @@
   (if-let [item (get-item k)]
     (reader/read-string item)))
 
-(defn set-item [k v]
+(defn set-item! [k v]
   (if (local-storage?)
     (let [item (if (string? v) v (pr-str v))]
-      (. js/localStorage (setItem k item)))))
+      (.setItem js/localStorage k item))))
 
+(defn conj-item!
+  "Assume localStorage for key k is (or should become) a vector and conj value v"
+  [k v]
+  (if (local-storage?)
+    (set-item! k (conj (or (get-clojure k) []) v))))

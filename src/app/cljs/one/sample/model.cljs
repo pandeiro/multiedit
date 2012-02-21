@@ -27,12 +27,14 @@
         random #(.floor js/Math (rand 16))]
     (apply str (repeatedly 32 #(get chars (random))))))
 
+(defn now [] (.getTime (js/Date.)))
+
 (defn document-session [& {:keys [who id content title]}]
   (let [state   (atom {})
         watch   (add-watch state :document-state-key
-                         (fn [k r o n]
-                           (swap! docs assoc (:id n) n)))
-        now     #(.getTime (js/Date.))
+                           (fn [k r o n]
+                             (swap! state assoc :ts (now))
+                             (swap! docs assoc (:id n) n)))
         init    (swap! state assoc :who who :id (or id (uuid))
                        :content (or content "") :ts (now)
                        :title (or title nil))]

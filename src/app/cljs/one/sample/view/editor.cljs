@@ -64,13 +64,13 @@
     (event/listen new
                   CLICK
                   (fn [e]
-                    (appe#nd! ($ "#content") (detach! ($ "#workspace")))
+                    (append! ($ "#content") (detach! ($ "#workspace")))
                     (dispatch/fire :document-requested)))
     (event/listen title
                   CLICK
                   (fn [e] (.setAttribute title "contenteditable" true)))))
 
-(defn- add-documents-list-listeners []
+(defn- add-item-listeners []
   (let [items (nodes ($ "#sidebar-documents > ol > li"))]
     (doseq [item items]
       (event/listen ($ "a.bookmark" item)
@@ -99,8 +99,14 @@
         items (rest (reverse (sort-by :ts (vals documents))))]
     (destroy-children! ol)
     (append-list-items! ol items)
-    (add-documents-list-listeners)))
+    (add-item-listeners!)))
 
-(dispatch/react-to #{:documents-changed}
-                   (fn [t d]
-                     (list-documents d)))
+;; Until this is a multi-user editor with state being preserved server-side,
+;; we don't need to listen to documents-changed and redraw the list. Note that
+;; this method still didn't work if a document was changed in a separate tab,
+;; because there was no mechanism to "watch" localStorage implemented, and the
+;; ClojureScript client-side atoms are not shared between tabs.
+(comment
+  (dispatch/react-to #{:documents-changed}
+                     (fn [t d]
+                       (list-documents d))))

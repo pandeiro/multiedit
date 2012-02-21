@@ -29,19 +29,25 @@
 
 (defn now [] (.getTime (js/Date.)))
 
-(defn document-session [& {:keys [who id content title]}]
+(defn document-session [& {:keys [who id content title mode cursor born]}]
   (let [state   (atom {})
         watch   (add-watch state :document-state-key
                            (fn [k r o n]
                              (swap! state assoc :ts (now))
                              (swap! docs assoc (:id n) n)))
-        init    (swap! state assoc :who who :id (or id (uuid))
-                       :content (or content "") :ts (now)
-                       :title (or title nil))]
+        init    (swap! state assoc
+                       :who who
+                       :id (or id (uuid))
+                       :content (or content "")
+                       :born (or born (now))
+                       :ts (now)
+                       :title title
+                       :mode (or mode "html")
+                       :cursor (or cursor 0))]
     (fn document [command & args]
       (condp = command
         :set! (let [[k v] args]
-                (swap! state assoc k v :ts (now)))
+                (swap! state assoc k v))
         :get  (let [[key] args]
                 (@state key))))))
 

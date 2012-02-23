@@ -1,6 +1,7 @@
 (ns ^{:doc "Contains client-side state, validators for input fields
   and functions which react to changes made to the input fields."}
   one.sample.model
+  (:use [one.sample.controller :only [load-local-docs]])
   (:require [one.dispatch :as dispatch]
             [local        :as local]))
 
@@ -44,7 +45,13 @@
       (condp = command
         :set! (let [[k v] args]
                 (swap! doc-state assoc k v :ts (now))
-                (local/conj-item! "activity" {:id (@state :id) :ts (now)}))
+                (comment
+                  (local/conj-item! "activity" {:id (@state :id) :ts (now)})))
         :get  (let [[key] args]
                 (@doc-state key))))))
 
+(dispatch/react-to #{:storage-updated}
+                   (fn [_ _]
+                     (.log js/console ":storage-updated")
+                     (comment (load-local-docs)
+                              (dispatch/fire (keyword (:document @state))))))

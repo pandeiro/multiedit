@@ -12,6 +12,7 @@
 
 (def CHANGE goog.editor.Field.EventType.DELAYEDCHANGE)
 (def CLICK  goog.events.EventType.CLICK)
+(def BLUR   goog.events.EventType.BLUR)
 
 (defn- strip-html [s]
   (-> s
@@ -47,30 +48,33 @@
 (declare list-documents)
 
 (defn launch [element doc-session]
-  (let [field     (spawn-editor element)
-        content   (doc-session :get :content)
-        new       ($ "button#new")
-        title     ($ "#star-title span#title")
-        set-title! (fn [t]
-                     (doc-session :set! :title))
-        set-html! (fn [content] (.setHtml field false (or content "") true))]
+  (let [field      (spawn-editor element)
+        content    (doc-session :get :content)
+        title      (doc-session :get :title) 
+        $new       ($ "button#new")
+        $title     ($ "#star-title span#title")
+        set-title! (fn [t] (set! (.-innerHTML $title) t))
+        set-html!  (fn [content] (.setHtml field false (or content "") true))]
     (do
+      (set-title! (or title (excerpt content 20)))
       (set-html! content)
+      (list-documents @docs)
       (.makeEditable field)
       (.focus element))
     (event/listen field
                   CHANGE
                   (fn [e] (doc-session :set! :content (.getCleanContents field))))
-    (event/listen new
+    (event/listen $new
                   CLICK
                   (fn [e]
                     (append! ($ "#content") (detach! ($ "#workspace")))
                     (dispatch/fire :document-requested)))
-    (event/listen title
-                  CLICK
-                  (fn [e] (.setAttribute title "contenteditable" true)))))
+    (event/listen $title
+                  BLUR
+                  (fn [e]
+                    (doc-session :set! :title (.-innerHTML $title))))))
 
-(defn- add-item-listeners []
+(defn- add-item-listeners! []
   (let [items (nodes ($ "#sidebar-documents > ol > li"))]
     (doseq [item items]
       (event/listen ($ "a.bookmark" item)
@@ -82,10 +86,10 @@
                       (dispatch/fire :document-requested
                                      (.getAttribute item "docid")))))))
 
-(defpartial document-list-item [{:keys [id content ts]}]
+(defpartial document-list-item [{:keys [id content ts title]}]
   [:li {:docid (name id)}
    [:div.excerpt
-    [:span (excerpt content 20)]]
+    [:span (or title (excerpt content 20))]]
    [:div.document-id
     [:span [:a.bookmark {:href (str \# (name id))}
             (.toString (js/Date. ts))]]]])

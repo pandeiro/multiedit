@@ -59,7 +59,7 @@
 (dispatch/react-to #{:init :workspace}
                    (fn [t d] (action (assoc d :type t))))
 
-(defn token-changed-to-id?
+(defn token-changed-to-id? [s]
   (.test (js/RegExp. "^[a-z0-9]{32}$") (name s)))
 
 (dispatch/react-to token-changed-to-id?

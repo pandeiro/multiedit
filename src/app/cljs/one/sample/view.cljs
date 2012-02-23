@@ -43,19 +43,17 @@
   (destroy! ($ "#workspace"))
   (append! ($ "#content") (:workspace snippets)))
 
-(defmethod render :workspace [{:keys [who id content]}]
+(defmethod render :workspace [document]
   (refresh-workspace!)
   (let [workspace ($ "#workspace")
         views     ($ "#content > div")
         editor    ($ "#workspace-editor-field")]
     (deactivate! views)
     (activate! workspace)
-    (editor/launch editor (model/document-session
-                           :who who :id id :content content))))
+    (editor/launch editor (model/session document))))
 
 (dispatch/react-to #{:document-retrieved}
-                   (fn [_ {:keys [who id content]}]
-                     (render {:state :workspace
-                              :who who :id id :content content})))
+                   (fn [_ d]
+                     (render (assoc d :state :workspace))))
 
 (dispatch/react-to #{:state-change} (fn [_ m] (render m)))

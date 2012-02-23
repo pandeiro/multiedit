@@ -20,7 +20,7 @@
 
 (dispatch/react-to #{:documents-changed}
                    (fn [_ d]
-                     (local/set-item "docs" d)))
+                     (local/set-item! "docs" d)))
 
 (defn uuid []
   (let [chars "0123456789abcdef"
@@ -29,11 +29,10 @@
 
 (defn now [] (.getTime (js/Date.)))
 
-(defn document-session [& {:keys [who id content title mode cursor born]}]
+(defn session [{:keys [who id content title mode cursor born]}]
   (let [state   (atom {})
         watch   (add-watch state :document-state-key
                            (fn [k r o n]
-                             (swap! state assoc :ts (now))
                              (swap! docs assoc (:id n) n)))
         init    (swap! state assoc
                        :who who
@@ -47,7 +46,8 @@
     (fn document [command & args]
       (condp = command
         :set! (let [[k v] args]
-                (swap! state assoc k v))
+                (swap! state assoc k v :ts (now))
+                (local/conj-item! "activity" {:id (@state :id) :ts (now)}))
         :get  (let [[key] args]
                 (@state key))))))
 

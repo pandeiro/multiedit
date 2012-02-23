@@ -14,13 +14,10 @@
 (def ^{:doc "An atom representing a collection of all open documents"}
   docs (atom {}))
 
-(add-watch docs :documents-state-key
-           (fn [k r o n]
-             (dispatch/fire :documents-changed n)))
-
-(dispatch/react-to #{:documents-changed}
+(dispatch/react-to #{:document-changed}
                    (fn [_ d]
-                     (local/set-item! "docs" d)))
+                     (swap! docs assoc (:id d) d)
+                     (local/set-item! "docs" @docs)))
 
 (defn uuid []
   (let [chars "0123456789abcdef"
@@ -30,19 +27,19 @@
 (defn now [] (.getTime (js/Date.)))
 
 (defn session [{:keys [who id content title mode cursor born]}]
-  (let [doc-state (atom {})
-        watch     (add-watch doc-state :doc-state-key
-                             (fn [k r o n]
-                               (swap! docs assoc (:id n) n)))
-        init      (swap! doc-state assoc
-                         :who who
-                         :id (or id (uuid))
-                         :content (or content "")
-                         :born (or born (now))
-                         :ts (now)
-                         :title title
-                         :mode (or mode "html")
-                         :cursor (or cursor 0))]
+  (let [doc-state (atom (merge {} {:who     who
+                                   :id      (or id (uuid))
+                                   :content (or content "")
+                                   :born    (or born (now))
+                                   :ts      (now)
+                                   :title   title
+                                   :mode    (or mode "html")
+                                   :cursor  (or cursor 0)}))]
+    (swap! state assoc :document (:id @doc-state))
+    (dispatch/fire :document-changed @doc-state)
+    (add-watch doc-state :doc-state-key
+               (fn [k r o n]
+                 (dispatch/fire :document-changed n)))
     (fn document [command & args]
       (condp = command
         :set! (let [[k v] args]

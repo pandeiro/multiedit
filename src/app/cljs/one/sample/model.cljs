@@ -1,7 +1,6 @@
 (ns ^{:doc "Contains client-side state, validators for input fields
   and functions which react to changes made to the input fields."}
   one.sample.model
-  (:use [one.sample.controller :only [load-local-docs]])
   (:require [one.dispatch :as dispatch]
             [local        :as local]))
 
@@ -53,5 +52,5 @@
 (dispatch/react-to #{:storage-updated}
                    (fn [_ _]
                      (.log js/console ":storage-updated")
-                     (comment (load-local-docs)
+                     (comment 
                               (dispatch/fire (keyword (:document @state))))))

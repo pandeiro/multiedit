@@ -16,7 +16,8 @@
 
 (dispatch/react-to #{:document-changed}
                    (fn [_ d]
-                     (swap! docs assoc (:id d) d)
+                     (if (not (nil? d))
+                       (swap! docs assoc (:id d) d))
                      (local/set-item! "docs" @docs)))
 
 (defn uuid []
@@ -51,7 +52,7 @@
 
 (defn remove-document [id]
   (swap! docs dissoc id)
-  (dispatch/fire :document-changed id))
+  (dispatch/fire :document-changed))
 
 (dispatch/react-to #{:storage-updated}
                    (fn [_ _]

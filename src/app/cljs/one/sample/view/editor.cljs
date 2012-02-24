@@ -2,7 +2,7 @@
   (:use [query            :only [$]]
         [domina           :only [append! destroy-children! detach! nodes
                                  single-node]]
-        [one.sample.model :only [state docs]])
+        [one.sample.model :only [state docs remove-document]])
   (:use-macros [crate.macros :only [defpartial]])
   (:require [goog.events               :as event]
             [goog.editor.Field         :as editor-iframe]
@@ -75,11 +75,17 @@
                     (doc-session :set! :title (.-innerHTML $title))))))
 
 (defn- add-item-listeners! []
-  (let [items (nodes ($ "#sidebar-documents > ol > li"))]
-    (doseq [item items]
-      (event/listen ($ "a.bookmark" item)
+  (doseq [item (nodes ($ "#sidebar-documents > ol > li"))]
+    (let [$bookmark ($ "a.bookmark" item)
+          $delete   ($ "button.delete" item)]
+      (event/listen $bookmark
                     CLICK
                     (fn [e] (.preventDefault e)))
+      (event/listen $delete
+                    CLICK
+                    (fn [e]
+                      (.stopPropagation e)
+                      (remove-document (.getAttribute item "docid"))))
       (event/listen item
                     CLICK
                     (fn [e]
@@ -87,11 +93,12 @@
                                      (.getAttribute item "docid")))))))
 
 (defpartial document-list-item [{:keys [id content ts title]}]
-  [:li {:docid (name id)}
+  [:li {:docid id}
+   [:button.delete]
    [:div.excerpt
     [:span (or title (excerpt content 20))]]
    [:div.document-id
-    [:span [:a.bookmark {:href (str \# (name id))}
+    [:span [:a.bookmark {:href (str \# id)}
             (.toString (js/Date. ts))]]]])
 
 (defn- append-list-items! [target items]

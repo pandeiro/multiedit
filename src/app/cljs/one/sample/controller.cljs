@@ -36,7 +36,7 @@
 (defn get-document
   ([id] (get-document id #(dispatch/fire :document-retrieved %)))
   ([id callback]
-      (callback (get @docs id {:id id :who (:who @state)}))))
+     (callback (get @docs id {:id id :who (:who @state)}))))
 
 (dispatch/react-to #{:document-requested}
                    (fn [t d]

@@ -4,7 +4,7 @@
 
 (defn- production-transform [h]
   (html/transform h
-                  [:ul#navigation]
+                  [:div.topbar]
                   (html/substitute (html/html-snippet ""))))
 
 (def ^{:doc "Configuration for the sample application."}

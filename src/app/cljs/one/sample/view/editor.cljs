@@ -2,7 +2,7 @@
   (:use [query            :only [$]]
         [domina           :only [append! destroy-children! detach! nodes
                                  single-node]]
-        [one.sample.model :only [docs]])
+        [one.sample.model :only [state docs]])
   (:use-macros [crate.macros :only [defpartial]])
   (:require [goog.events               :as event]
             [goog.editor.Field         :as editor-iframe]
@@ -105,12 +105,7 @@
     (append-list-items! ol items)
     (add-item-listeners!)))
 
-;; Until this is a multi-user editor with state being preserved server-side,
-;; we don't need to listen to documents-changed and redraw the list. Note that
-;; this method still didn't work if a document was changed in a separate tab,
-;; because there was no mechanism to "watch" localStorage implemented, and the
-;; ClojureScript client-side atoms are not shared between tabs.
-(comment
-  (dispatch/react-to #{:documents-changed}
-                     (fn [t d]
-                       (list-documents d))))
+(dispatch/react-to #{:document-changed}
+                   (fn [_ d]
+                     (if (not= (:document @state) d)
+                       (list-documents @docs))))

@@ -49,6 +49,10 @@
         :get  (let [[key] args]
                 (@doc-state key))))))
 
+(defn remove-document [id]
+  (swap! docs dissoc id)
+  (dispatch/fire :document-changed id))
+
 (dispatch/react-to #{:storage-updated}
                    (fn [_ _]
                      (.log js/console ":storage-updated")

@@ -80,6 +80,7 @@ div#sidebar-documents ol#documents-list:hover li {
 }
 
 div#sidebar-documents ol#documents-list li {
+    position: relative;
     list-style: none;
     padding: 6px 0;
     cursor: pointer;
@@ -96,13 +97,31 @@ div#sidebar-documents ol#documents-list li:hover {
     color: #1d1d1d;
 }
 
-div#sidebar-documents ol#documents-list li:hover div.document-id {
+div#sidebar-documents ol#documents-list li:hover div.document-id,
+div#sidebar-documents ol#documents-list li:hover button.delete {
     opacity: 1;
 }
 
 div.document-id a.bookmark {
     text-decoration: none;
     color: #5f5f99;
+}
+
+div#sidebar-documents ol#documents-list li button.delete {
+    margin: 0; padding: 0; position: absolute;
+    border: none; background: #dadada; color: #fff;
+    top: 6px; left: -20px; width: 16px; height: 16px;
+    line-height: 16px; font-size: 12px; font-weight: bold;
+    -webkit-border-radius: 8px; opacity: 0;
+    -webkit-transition: all 0.4s linear;
+}
+
+div#sidebar-documents ol#documents-list li button.delete:hover {
+    background: #ef1200; opacity: 1;
+}
+
+div#sidebar-documents ol#documents-list li button.delete:after {
+    content: "x";
 }
 
 /* workspace-editor */

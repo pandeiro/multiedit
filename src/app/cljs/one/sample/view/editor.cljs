@@ -8,11 +8,13 @@
             [goog.editor.Field         :as editor-iframe]
             [goog.editor.SeamlessField :as editor-div]
             [one.dispatch              :as dispatch]
-            [crate.core                :as crate]))
+            [crate.core                :as crate]
+            [dates                     :as dates]))
 
-(def CHANGE goog.editor.Field.EventType.DELAYEDCHANGE)
-(def CLICK  goog.events.EventType.CLICK)
-(def BLUR   goog.events.EventType.BLUR)
+(def CHANGE    goog.editor.Field.EventType.DELAYEDCHANGE)
+(def CLICK     goog.events.EventType.CLICK)
+(def BLUR      goog.events.EventType.BLUR)
+(def MOUSEOVER goog.events.EventType.MOUSEOVER)
 
 (defn- strip-html [s]
   (-> s
@@ -76,30 +78,33 @@
 
 (defn- add-item-listeners! []
   (doseq [item (nodes ($ "#sidebar-documents > ol > li"))]
-    (let [$bookmark ($ "a.bookmark" item)
-          $delete   ($ "button.delete" item)]
-      (event/listen $bookmark
-                    CLICK
-                    (fn [e] (.preventDefault e)))
-      (event/listen $delete
-                    CLICK
-                    (fn [e]
-                      (.stopPropagation e)
-                      (remove-document (.getAttribute item "docid"))))
-      (event/listen item
-                    CLICK
-                    (fn [e]
-                      (dispatch/fire :document-requested
-                                     (.getAttribute item "docid")))))))
+    (event/listen ($ "a.bookmark" item)
+                  CLICK
+                  (fn [e] (.preventDefault e)))
+    (event/listen ($ "button.delete" item)
+                  CLICK
+                  (fn [e]
+                    (.stopPropagation e)
+                    (remove-document (.getAttribute item "docid"))))
+    (event/listen item
+                  MOUSEOVER
+                  (fn [e]
+                    (set! (.-innerHTML ($ "a.bookmark" item))
+                          (dates/relative (.getAttribute item "docts")))))
+    (event/listen item
+                  CLICK
+                  (fn [e]
+                    (dispatch/fire :document-requested
+                                   (.getAttribute item "docid"))))))
 
 (defpartial document-list-item [{:keys [id content ts title]}]
-  [:li {:docid id}
+  [:li {:docid id :docts ts}
    [:button.delete]
    [:div.excerpt
     [:span (or title (excerpt content 20))]]
    [:div.document-id
     [:span [:a.bookmark {:href (str \# id)}
-            (.toString (js/Date. ts))]]]])
+            (dates/relative ts)]]]])
 
 (defn- append-list-items! [target items]
   (doseq [item items]
@@ -114,5 +119,5 @@
 
 (dispatch/react-to #{:document-changed}
                    (fn [_ d]
-                     (if (not= (:document @state) d)
+                     (if (not= (:document @state) (:id d))
                        (list-documents @docs))))
